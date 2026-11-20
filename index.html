@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Bahasa Indonesia Kelas 2 SD - Kurikulum Merdeka</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Fredoka', 'sans-serif'],
+                        sans: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Latar belakang pola titik lembut ramah anak */
+        body {
+            background-color: #FFFDF7;
+            background-image: radial-gradient(#FDE68A 1.5px, transparent 1.5px), radial-gradient(#BFDBFE 1.5px, #FFFDF7 1.5px);
+            background-size: 42px 42px;
+            background-position: 0 0, 21px 21px;
+        }
+
+        /* Animasi Kartu Flip 3D (Antonim) */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* Animasi Mengambang & Pop */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        @keyframes swapPulse {
+            0% { transform: scale(0.85) translateY(-8px); opacity: 0.4; }
+            60% { transform: scale(1.06) translateY(0); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .animate-swap { animation: swapPulse 0.45s ease-out forwards; }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 min-h-screen flex flex-col selection:bg-amber-200">
+
+    <!-- Canvas Selebrasi Konfeti -->
+    <canvas id="confetti-canvas" class="hidden"></canvas>
+
+    <!-- ==================== HEADER & NAVIGASI UTAMA ==================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b-4 border-amber-200">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo & Judul -->
+            <button onclick="switchPage('beranda')" class="flex items-center gap-3 text-left group focus:outline-none">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-transform">
+                    📚
+                </div>
+                <div>
+                    <h1 class="font-display text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
+                        Pintar Bahasa <span class="text-orange-500">Kelas 2</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm font-bold text-emerald-600">Kurikulum Merdeka • Fase A</p>
+                </div>
+            </button>
+
+            <!-- Kanan: Bintang Mini & Toggle Suara -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex items-center gap-1.5 bg-amber-50 border-2 border-amber-200 px-3 py-1.5 rounded-2xl shadow-sm" title="Total Bintang Kamu">
+                    <span class="text-lg">⭐</span>
+                    <span id="header-star-count" class="font-display font-bold text-amber-700 text-base">0</span>
+                </div>
+                <button id="sound-toggle" onclick="toggleSound()" class="p-2 sm:px-3.5 sm:py-2 rounded-2xl bg-slate-100 hover:bg-amber-100 text-slate-700 font-bold text-sm flex items-center gap-1.5 transition-colors border-2 border-slate-200" title="Nyalakan/Matikan Efek Suara">
+                    <span id="sound-icon" class="text-lg">🔊</span>
+                    <span class="hidden sm:inline" id="sound-text">Suara On</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Navigasi 4 Bagian Utama -->
+        <nav class="max-w-6xl mx-auto px-4 pb-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button onclick="switchPage('beranda')" id="nav-beranda" class="nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2">
+                    <span>🏠</span> Beranda
+                </button>
+                <button onclick="switchPage('materi')" id="nav-materi" class="nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2">
+                    <span>📖</span> Materi Interaktif
+                </button>
+                <button onclick="switchPage('latihan')" id="nav-latihan" class="nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2">
+                    <span>✏️</span> Latihan Kebahasaan
+                </button>
+                <button onclick="switchPage('kuis')" id="nav-kuis" class="nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2">
+                    <span>🏆</span> Kuis Seru
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ==================== KONTEN UTAMA ==================== -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 sm:py-8">
+
+        <!-- ==================== 1. HALAMAN BERANDA ==================== -->
+        <section id="page-beranda" class="page-section space-y-8 animate-pop">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-br from-amber-100 via-orange-50 to-sky-100 rounded-3xl p-6 sm:p-10 border-4 border-white shadow-xl relative overflow-hidden">
+                <div class="grid md:grid-cols-12 gap-6 items-center relative z-10">
+                    <div class="md:col-span-8 space-y-4">
+                        <span class="inline-block bg-white/90 text-orange-600 font-bold px-4 py-1.5 rounded-full text-sm shadow-sm border border-orange-200">
+                            ✨ Media Pembelajaran Interaktif (MPI)
+                        </span>
+                        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
+                            Halo, Sahabat Kelas 2! <br>Yuk Belajar <span class="text-sky-600">Bahasa Indonesia</span>!
+                        </h2>
+                        <p class="text-base sm:text-lg text-slate-700 font-medium leading-relaxed">
+                            Belajar jadi makin seru! Kamu bisa menjelajahi 5 materi interaktif termasuk <strong>Kalimat Aktif & Pasif</strong>, bermain latihan menyusun kalimat, dan mengumpulkan bintang di Kuis Seru!
+                        </p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick="switchPage('materi')" class="bg-sky-500 hover:bg-sky-600 text-white font-display font-bold text-lg px-6 py-3.5 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                📖 Mulai Materi
+                            </button>
+                            <button onclick="switchPage('latihan')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-display font-bold text-lg px-6 py-3.5 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                ✏️ Latihan Yuk
+                            </button>
+                            <button onclick="switchPage('kuis')" class="bg-purple-500 hover:bg-purple-600 text-white font-display font-bold text-lg px-6 py-3.5 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                🏆 Kuis Seru
+                            </button>
+                        </div>
+                    </div>
+                    <div class="md:col-span-4 flex justify-center">
+                        <div class="w-44 h-44 sm:w-52 sm:h-52 bg-white rounded-full shadow-lg border-8 border-amber-200 flex flex-col items-center justify-center animate-float">
+                            <span class="text-7xl sm:text-8xl">🦉</span>
+                            <span class="font-display font-bold text-amber-600 text-sm mt-1">Pak Burung Hantu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pelacak Progres Bintang (LocalStorage) -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-amber-200 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 shrink-0 rounded-2xl bg-amber-100 flex items-center justify-center text-4xl shadow-inner">
+                        🌟
+                    </div>
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-slate-800">Papan Bintang Prestasimu</h3>
+                        <p class="text-slate-600 text-sm sm:text-base font-medium">
+                            Total Bintang Terkumpul: <strong id="home-star-total" class="text-amber-600 text-lg">0</strong> ⭐
+                            <span id="home-best-quiz" class="inline-block ml-2 bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-full">Skor Kuis Terbaik: -</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="reset-progress-btn" onclick="requestResetProgress()" class="text-xs font-bold text-slate-400 hover:text-rose-500 px-3 py-2 rounded-xl hover:bg-rose-50 transition-colors">
+                        Reset Bintang
+                    </button>
+                    <div id="reset-confirm-box" class="hidden flex items-center gap-2 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs font-bold text-rose-700">Yakin reset?</span>
+                        <button onclick="confirmResetProgress()" class="text-xs font-bold bg-rose-500 text-white px-2.5 py-1 rounded-lg hover:bg-rose-600">Ya</button>
+                        <button onclick="cancelResetProgress()" class="text-xs font-bold bg-white text-slate-600 px-2.5 py-1 rounded-lg border border-slate-200">Batal</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ringkasan 5 Topik Belajar -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800">📚 5 Topik Belajar Hari Ini</h3>
+                    <span class="text-xs sm:text-sm font-bold text-slate-500">Klik kartu untuk belajar!</span>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Topik 1 -->
+                    <div onclick="openModuleFromHome(1)" class="cursor-pointer group bg-amber-50 hover:bg-amber-100 rounded-3xl p-5 border-2 border-amber-200 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-2xl bg-amber-400 text-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🔠</span>
+                            <span class="text-xs font-bold bg-white text-amber-700 px-2.5 py-1 rounded-full border border-amber-200">Modul 1</span>
+                        </div>
+                        <h4 class="font-display text-xl font-bold text-amber-950">Huruf Kapital & Tanda Baca</h4>
+                        <p class="text-sm text-slate-600 mt-1">Belajar awal kalimat, nama orang, serta tanda (.), (?), dan (!).</p>
+                    </div>
+
+                    <!-- Topik 2 -->
+                    <div onclick="openModuleFromHome(2)" class="cursor-pointer group bg-sky-50 hover:bg-sky-100 rounded-3xl p-5 border-2 border-sky-200 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🧩</span>
+                            <span class="text-xs font-bold bg-white text-sky-700 px-2.5 py-1 rounded-full border border-sky-200">Modul 2</span>
+                        </div>
+                        <h4 class="font-display text-xl font-bold text-sky-950">Pola Kalimat S-P-O</h4>
+                        <p class="text-sm text-slate-600 mt-1">Mengenal Subjek (pelaku), Predikat (kegiatan), dan Objek (benda).</p>
+                    </div>
+
+                    <!-- Topik 3 -->
+                    <div onclick="openModuleFromHome(3)" class="cursor-pointer group bg-emerald-50 hover:bg-emerald-100 rounded-3xl p-5 border-2 border-emerald-200 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🏠</span>
+                            <span class="text-xs font-bold bg-white text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">Modul 3</span>
+                        </div>
+                        <h4 class="font-display text-xl font-bold text-emerald-950">Kata Depan 'di' vs 'di-'</h4>
+                        <p class="text-sm text-slate-600 mt-1">Membedakan 'di' tempat (dipisah) dan awalan 'di-' (digabung).</p>
+                    </div>
+
+                    <!-- Topik 4 -->
+                    <div onclick="openModuleFromHome(4)" class="cursor-pointer group bg-pink-50 hover:bg-pink-100 rounded-3xl p-5 border-2 border-pink-200 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-2xl bg-pink-500 text-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🔄</span>
+                            <span class="text-xs font-bold bg-white text-pink-700 px-2.5 py-1 rounded-full border border-pink-200">Modul 4</span>
+                        </div>
+                        <h4 class="font-display text-xl font-bold text-pink-950">Kata Lawan (Antonim)</h4>
+                        <p class="text-sm text-slate-600 mt-1">Bermain kartu flip 3D untuk menghafal pasangan lawan kata.</p>
+                    </div>
+
+                    <!-- Topik 5 (BARU) -->
+                    <div onclick="openModuleFromHome(5)" class="cursor-pointer group bg-purple-50 hover:bg-purple-100 rounded-3xl p-5 border-2 border-purple-300 shadow-sm hover:shadow-md transition-all sm:col-span-2 lg:col-span-2 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="w-12 h-12 rounded-2xl bg-purple-500 text-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🪄</span>
+                                <span class="text-xs font-extrabold bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full shadow-sm">✨ MATERI BARU!</span>
+                            </div>
+                            <span class="text-xs font-bold bg-white text-purple-700 px-2.5 py-1 rounded-full border border-purple-200">Modul 5</span>
+                        </div>
+                        <h4 class="font-display text-xl sm:text-2xl font-bold text-purple-950">Kalimat Aktif & Kalimat Pasif</h4>
+                        <p class="text-sm sm:text-base text-slate-600 mt-1">Kenali kata kerja <strong>me-</strong> (aktif) dan <strong>di-</strong> (pasif), lalu coba simulasi seru <strong>"Sulap Kalimat Aktif ↔ Pasif"</strong>!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 2. HALAMAN MATERI INTERAKTIF ==================== -->
+        <section id="page-materi" class="page-section hidden space-y-6 animate-pop">
+            <div class="text-center space-y-2">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-800">📖 Materi Interaktif (5 Modul)</h2>
+                <p class="text-slate-600 text-base sm:text-lg">Pilih modul di bawah ini dan klik elemen interaktifnya ya!</p>
+            </div>
+
+            <!-- Tab 5 Modul -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                <button onclick="selectModule(1)" id="mod-btn-1" class="mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1">
+                    <span class="text-2xl">🔠</span>
+                    <span class="font-display font-bold text-sm sm:text-base">Modul 1</span>
+                    <span class="text-xs font-semibold opacity-80 leading-tight">Kapital & Tanda Baca</span>
+                </button>
+                <button onclick="selectModule(2)" id="mod-btn-2" class="mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1">
+                    <span class="text-2xl">🧩</span>
+                    <span class="font-display font-bold text-sm sm:text-base">Modul 2</span>
+                    <span class="text-xs font-semibold opacity-80 leading-tight">Pola Kalimat S-P-O</span>
+                </button>
+                <button onclick="selectModule(3)" id="mod-btn-3" class="mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1">
+                    <span class="text-2xl">🏠</span>
+                    <span class="font-display font-bold text-sm sm:text-base">Modul 3</span>
+                    <span class="text-xs font-semibold opacity-80 leading-tight">Kata 'di' vs 'di-'</span>
+                </button>
+                <button onclick="selectModule(4)" id="mod-btn-4" class="mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1">
+                    <span class="text-2xl">🔄</span>
+                    <span class="font-display font-bold text-sm sm:text-base">Modul 4</span>
+                    <span class="text-xs font-semibold opacity-80 leading-tight">Kata Lawan (Antonim)</span>
+                </button>
+                <button onclick="selectModule(5)" id="mod-btn-5" class="mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1 col-span-2 sm:col-span-1 relative">
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-2xl">🪄</span>
+                        <span class="text-[10px] font-extrabold bg-orange-400 text-white px-2 py-0.5 rounded-full">BARU</span>
+                    </div>
+                    <span class="font-display font-bold text-sm sm:text-base">Modul 5</span>
+                    <span class="text-xs font-semibold opacity-80 leading-tight">Aktif & Pasif</span>
+                </button>
+            </div>
+
+            <!-- Kontainer Isi Modul -->
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border-2 border-slate-200 shadow-lg">
+
+                <!-- ===== MODUL 1: Huruf Kapital & Tanda Baca ===== -->
+                <div id="module-1" class="module-content space-y-6">
+                    <div class="border-b-2 border-amber-100 pb-4">
+                        <span class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full text-sm">Modul 1</span>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-2">Huruf Kapital & Tanda Baca</h3>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200">
+                            <h4 class="font-display text-xl font-bold text-amber-900 flex items-center gap-2">
+                                <span>🅰️</span> Huruf Kapital (Huruf Besar)
+                            </h4>
+                            <ul class="mt-3 space-y-2 text-slate-700 font-medium">
+                                <li class="flex items-start gap-2"><span>✅</span> <span>Dipakai pada huruf pertama di <strong>awal kalimat</strong>.</span></li>
+                                <li class="flex items-start gap-2"><span>✅</span> <span>Dipakai pada huruf pertama <strong>nama orang</strong> (Budi, Siti, Rani).</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-sky-50 p-5 rounded-2xl border-2 border-sky-200">
+                            <h4 class="font-display text-xl font-bold text-sky-900 flex items-center gap-2">
+                                <span>❗</span> Tanda Baca Akhir Kalimat
+                            </h4>
+                            <ul class="mt-3 space-y-2 text-slate-700 font-medium">
+                                <li><strong class="text-sky-700 text-lg">.</strong> (Titik) → Untuk kalimat berita/cerita.</li>
+                                <li><strong class="text-purple-700 text-lg">?</strong> (Tanya) → Untuk kalimat pertanyaan.</li>
+                                <li><strong class="text-rose-700 text-lg">!</strong> (Seru) → Untuk perintah atau rasa kagum.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-4">
+                        <h4 class="font-display text-xl font-bold text-slate-800">✨ Klik Contoh untuk Melihat Sorotan & Penjelasan!</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="showKapitalExample(0)" class="px-4 py-2.5 rounded-xl bg-white border-2 border-sky-300 hover:bg-sky-100 font-bold text-sky-800 transition-colors">Kalimat Berita (.)</button>
+                            <button onclick="showKapitalExample(1)" class="px-4 py-2.5 rounded-xl bg-white border-2 border-purple-300 hover:bg-purple-100 font-bold text-purple-800 transition-colors">Kalimat Tanya (?)</button>
+                            <button onclick="showKapitalExample(2)" class="px-4 py-2.5 rounded-xl bg-white border-2 border-rose-300 hover:bg-rose-100 font-bold text-rose-800 transition-colors">Kalimat Seru (!)</button>
+                        </div>
+                        <div id="kapital-demo-box" class="bg-white p-5 rounded-2xl border-2 border-dashed border-amber-300 text-center space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- ===== MODUL 2: Pola Kalimat S-P-O ===== -->
+                <div id="module-2" class="module-content hidden space-y-6">
+                    <div class="border-b-2 border-sky-100 pb-4">
+                        <span class="bg-sky-100 text-sky-800 font-bold px-3 py-1 rounded-full text-sm">Modul 2</span>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-2">Pola Kalimat S - P - O</h3>
+                    </div>
+
+                    <div class="grid sm:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 border-2 border-blue-300 p-4 rounded-2xl">
+                            <div class="font-display text-xl font-bold text-blue-700">🔵 S = Subjek</div>
+                            <p class="text-sm text-slate-700 mt-1 font-medium">Orang atau pelaku yang melakukan kegiatan. (Contoh: <em>Ibu, Budi, Kucing</em>)</p>
+                        </div>
+                        <div class="bg-emerald-50 border-2 border-emerald-300 p-4 rounded-2xl">
+                            <div class="font-display text-xl font-bold text-emerald-700">🟢 P = Predikat</div>
+                            <p class="text-sm text-slate-700 mt-1 font-medium">Kegiatan atau kata kerja yang dilakukan. (Contoh: <em>memasak, membaca, minum</em>)</p>
+                        </div>
+                        <div class="bg-orange-50 border-2 border-orange-300 p-4 rounded-2xl">
+                            <div class="font-display text-xl font-bold text-orange-700">🟠 O = Objek</div>
+                            <p class="text-sm text-slate-700 mt-1 font-medium">Benda atau hal yang dikenai pekerjaan. (Contoh: <em>sayur, buku, susu</em>)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 sm:p-6 rounded-2xl border-2 border-slate-200 space-y-5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h4 class="font-display text-xl font-bold text-slate-800">👆 Klik Tiap Kata di Bawah Ini!</h4>
+                            <div class="flex gap-2">
+                                <button onclick="changeSpoSentence(-1)" class="px-3.5 py-2 rounded-xl bg-white border-2 border-slate-300 hover:bg-slate-100 font-bold text-sm">⬅️ Sebelumnya</button>
+                                <button onclick="changeSpoSentence(1)" class="px-3.5 py-2 rounded-xl bg-white border-2 border-slate-300 hover:bg-slate-100 font-bold text-sm">Berikutnya ➡️</button>
+                            </div>
+                        </div>
+
+                        <div id="spo-interactive-area" class="flex flex-wrap justify-center gap-4 py-3"></div>
+
+                        <div id="spo-feedback" class="bg-white p-4 rounded-2xl border-2 border-slate-200 text-center font-bold text-slate-600 min-h-[64px] flex items-center justify-center">
+                            Ayo klik salah satu kata di atas untuk melihat apakah itu Subjek (Biru), Predikat (Hijau), atau Objek (Oranye)!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MODUL 3: Kata Depan 'di' vs Awalan 'di-' ===== -->
+                <div id="module-3" class="module-content hidden space-y-6">
+                    <div class="border-b-2 border-emerald-100 pb-4">
+                        <span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">Modul 3</span>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-2">Kata Depan 'di' vs Awalan 'di-'</h3>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-teal-50 p-5 rounded-2xl border-2 border-teal-300 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl">📍</span>
+                                <h4 class="font-display text-2xl font-bold text-teal-800">'di' DIPISAH (Tempat)</h4>
+                            </div>
+                            <p class="text-slate-700 font-medium">Ditulis <strong>terpisah</strong> (pakai spasi) jika diikuti oleh <strong>nama tempat</strong> atau posisi.</p>
+                            <div class="text-sm font-bold text-teal-700">Contoh: di rumah, di sekolah, di pasar, di meja</div>
+                        </div>
+
+                        <div class="bg-indigo-50 p-5 rounded-2xl border-2 border-indigo-300 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl">⚙️</span>
+                                <h4 class="font-display text-2xl font-bold text-indigo-800">'di-' DIGABUNG (Kata Kerja)</h4>
+                            </div>
+                            <p class="text-slate-700 font-medium">Ditulis <strong>digabung</strong> (tanpa spasi) jika diikuti oleh <strong>kata kerja pasif</strong>.</p>
+                            <div class="text-sm font-bold text-indigo-700">Contoh: dimakan, ditulis, dibaca, disiram</div>
+                        </div>
+                    </div>
+
+                    <!-- Kartu Contoh Interaktif Modul 3 -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-4">
+                        <h4 class="font-display text-xl font-bold text-slate-800">👆 Klik Kartu di Bawah untuk Melihat Alasannya!</h4>
+                        <div id="di-cards-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                        <div id="di-card-explain" class="bg-white p-4 rounded-2xl border-2 border-dashed border-emerald-300 text-center font-bold text-slate-700 min-h-[56px] flex items-center justify-center">
+                            Pilih salah satu kartu kata di atas untuk melihat penjelasan!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MODUL 4: Kata Lawan (Antonim) ===== -->
+                <div id="module-4" class="module-content hidden space-y-6">
+                    <div class="border-b-2 border-pink-100 pb-4">
+                        <span class="bg-pink-100 text-pink-800 font-bold px-3 py-1 rounded-full text-sm">Modul 4</span>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-2">Kata Lawan (Antonim)</h3>
+                        <p class="text-slate-600 mt-1"><strong>Antonim</strong> adalah kata yang maknanya berlawanan. Klik kartu di bawah untuk membaliknya!</p>
+                    </div>
+
+                    <div id="flashcard-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- ===== MODUL 5 (BARU): Kalimat Aktif & Pasif + Simulasi Sulap ===== -->
+                <div id="module-5" class="module-content hidden space-y-6">
+                    <div class="border-b-2 border-purple-100 pb-4">
+                        <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-full text-sm">Modul 5 • BARU!</span>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-2">🪄 Kalimat Aktif & Kalimat Pasif</h3>
+                    </div>
+
+                    <!-- Penjelasan Sederhana Aktif vs Pasif -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-5 rounded-2xl border-2 border-blue-200 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-3xl">🏃</span>
+                                <h4 class="font-display text-xl sm:text-2xl font-bold text-blue-900">Kalimat Aktif (me-)</h4>
+                            </div>
+                            <p class="text-slate-700 font-medium">
+                                <strong>Subjek melakukan pekerjaan.</strong> Kata kerjanya biasanya berawalan <span class="bg-emerald-200 text-emerald-900 font-extrabold px-2 py-0.5 rounded-lg">me-</span>.
+                            </p>
+                            <div class="bg-white p-3 rounded-xl border border-blue-200 text-sm font-bold text-slate-700">
+                                Contoh: <span class="text-blue-600">Ibu</span> <span class="text-emerald-600">memasak</span> <span class="text-orange-600">sayur</span>.
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-200 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-3xl">🎯</span>
+                                <h4 class="font-display text-xl sm:text-2xl font-bold text-purple-900">Kalimat Pasif (di-)</h4>
+                            </div>
+                            <p class="text-slate-700 font-medium">
+                                <strong>Subjek dikenai pekerjaan.</strong> Kata kerjanya berawalan <span class="bg-purple-200 text-purple-900 font-extrabold px-2 py-0.5 rounded-lg">di-</span> (sering diikuti kata <em>oleh</em>).
+                            </p>
+                            <div class="bg-white p-3 rounded-xl border border-purple-200 text-sm font-bold text-slate-700">
+                                Contoh: <span class="text-orange-600">Sayur</span> <span class="text-purple-600">dimasak</span> oleh <span class="text-blue-600">Ibu</span>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simulasi Interaktif: SULAP KALIMAT AKTIF <-> PASIF -->
+                    <div class="bg-gradient-to-br from-purple-50 via-white to-amber-50 p-5 sm:p-7 rounded-3xl border-4 border-purple-200 shadow-inner space-y-5">
+                        <div class="text-center space-y-1">
+                            <span class="inline-block bg-purple-500 text-white text-xs font-extrabold px-3 py-1 rounded-full tracking-wide uppercase">Simulasi Interaktif</span>
+                            <h4 class="font-display text-2xl sm:text-3xl font-bold text-purple-900">✨ Sulap Kalimat Aktif ↔ Pasif ✨</h4>
+                            <p class="text-slate-600 text-sm sm:text-base font-medium">Pilih kalimatnya, lalu tekan tombol sulap untuk melihat Subjek & Objek bertukar tempat!</p>
+                        </div>
+
+                        <!-- Pilihan 5 Kalimat -->
+                        <div id="magic-selector" class="flex flex-wrap justify-center gap-2"></div>
+
+                        <!-- Badge Status Saat Ini -->
+                        <div class="flex justify-center">
+                            <span id="magic-mode-badge" class="px-4 py-1.5 rounded-full font-display font-bold text-base shadow-sm border-2"></span>
+                        </div>
+
+                        <!-- Panggung Kata Warna-Warni -->
+                        <div id="magic-stage" class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 py-4 min-h-[110px]"></div>
+
+                        <!-- Tombol Sulap Besar -->
+                        <div class="flex justify-center">
+                            <button id="magic-toggle-btn" onclick="toggleMagicVoice()" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-display font-bold text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                🪄 Ubah ke Pasif!
+                            </button>
+                        </div>
+
+                        <!-- Penjelasan Perubahan -->
+                        <div id="magic-explain" class="bg-white p-4 rounded-2xl border-2 border-purple-100 text-center text-sm sm:text-base font-semibold text-slate-700"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== 3. HALAMAN LATIHAN KEBAHASAAN ==================== -->
+        <section id="page-latihan" class="page-section hidden space-y-6 animate-pop">
+            <div class="text-center space-y-2">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-slate-800">✏️ Latihan Soal Kebahasaan</h2>
+                <p class="text-slate-600 text-base sm:text-lg">Pilih latihan di bawah ini untuk mengasah kemampuanmu!</p>
+            </div>
+
+            <!-- Pilihan 3 Jenis Latihan -->
+            <div class="grid sm:grid-cols-3 gap-3">
+                <button onclick="selectLatihan(1)" id="lat-btn-1" class="lat-btn p-4 rounded-2xl font-display font-bold text-base sm:text-lg border-2 transition-all">
+                    🧩 Latihan 1: Susun S-P-O
+                </button>
+                <button onclick="selectLatihan(2)" id="lat-btn-2" class="lat-btn p-4 rounded-2xl font-display font-bold text-base sm:text-lg border-2 transition-all">
+                    🔍 Latihan 2: Perbaiki Ejaan
+                </button>
+                <button onclick="selectLatihan(3)" id="lat-btn-3" class="lat-btn p-4 rounded-2xl font-display font-bold text-base sm:text-lg border-2 transition-all">
+                    🪄 Latihan 3: Aktif & Pasif
+                </button>
+            </div>
+
+            <!-- ===== LATIHAN 1: Susun Kalimat S-P-O ===== -->
+            <div id="latihan-1" class="bg-white rounded-3xl p-6 sm:p-8 border-2 border-emerald-200 shadow-lg space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+                    <h3 class="font-display text-xl sm:text-2xl font-bold text-emerald-800">🧩 Susun Kata menjadi Kalimat S-P-O</h3>
+                    <span id="lat1-counter" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">Soal 1 / 5</span>
+                </div>
+
+                <p class="text-slate-600 font-medium">Klik blok kata acak di bawah ini secara berurutan agar menjadi kalimat <strong>Subjek - Predikat - Objek</strong> yang benar:</p>
+
+                <!-- Area Jawaban -->
+                <div id="lat1-answer-zone" class="min-h-[84px] p-4 rounded-2xl bg-sky-50 border-2 border-dashed border-sky-300 flex flex-wrap items-center justify-center gap-3"></div>
+
+                <!-- Pilihan Kata Acak -->
+                <div id="lat1-word-bank" class="flex flex-wrap justify-center gap-3 py-2"></div>
+
+                <!-- Feedback -->
+                <div id="lat1-feedback" class="hidden p-4 rounded-2xl font-bold text-center text-base sm:text-lg"></div>
+
+                <!-- Tombol Kontrol -->
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <button onclick="resetLatihan1()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border-2 border-slate-300 transition-colors">
+                        🔄 Reset
+                    </button>
+                    <button onclick="checkLatihan1()" id="lat1-check-btn" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-display font-bold text-lg shadow-md transition-colors">
+                        ✅ Cek Jawaban
+                    </button>
+                    <button onclick="nextLatihan1()" id="lat1-next-btn" class="hidden px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-display font-bold text-lg shadow-md transition-colors">
+                        Soal Berikutnya ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== LATIHAN 2: Perbaiki Ejaan ===== -->
+            <div id="latihan-2" class="hidden bg-white rounded-3xl p-6 sm:p-8 border-2 border-amber-200 shadow-lg space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+                    <h3 class="font-display text-xl sm:text-2xl font-bold text-amber-800">🔍 Perbaiki Ejaan (Kapital, Tanda Baca, 'di')</h3>
+                    <span id="lat2-counter" class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full text-sm">Soal 1 / 5</span>
+                </div>
+
+                <div id="lat2-question" class="text-lg sm:text-2xl font-bold text-slate-800 bg-amber-50 p-5 rounded-2xl border-2 border-amber-100"></div>
+                <div id="lat2-options" class="grid gap-3"></div>
+                <div id="lat2-feedback" class="hidden p-4 rounded-2xl font-medium text-base border-2"></div>
+
+                <div class="flex justify-end">
+                    <button onclick="nextLatihan2()" id="lat2-next-btn" class="hidden px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-display font-bold text-lg shadow-md transition-colors">
+                        Soal Berikutnya ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== LATIHAN 3 (BARU): Aktif atau Pasif? & Ubah Kalimat ===== -->
+            <div id="latihan-3" class="hidden bg-white rounded-3xl p-6 sm:p-8 border-2 border-purple-200 shadow-lg space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-purple-100 pb-4">
+                    <h3 class="font-display text-xl sm:text-2xl font-bold text-purple-900">🪄 Latihan Kalimat Aktif & Pasif</h3>
+                    <!-- Sub-tab Bagian A & Bagian B -->
+                    <div class="flex gap-2">
+                        <button onclick="selectLatihan3Part('A')" id="lat3-partA-btn" class="px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all">Bagian A: Tebak Jenis</button>
+                        <button onclick="selectLatihan3Part('B')" id="lat3-partB-btn" class="px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all">Bagian B: Ubah Kalimat</button>
+                    </div>
+                </div>
+
+                <!-- BAGIAN A: Menentukan Kalimat Aktif atau Pasif -->
+                <div id="lat3-part-A" class="space-y-5">
+                    <div class="flex items-center justify-between">
+                        <p class="text-slate-600 font-medium">Baca kalimat di bawah ini! Apakah ini <strong>Kalimat Aktif</strong> atau <strong>Kalimat Pasif</strong>?</p>
+                        <span id="lat3A-counter" class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-full text-sm shrink-0">Soal 1 / 5</span>
+                    </div>
+
+                    <div id="lat3A-sentence" class="bg-purple-50 border-2 border-purple-200 rounded-3xl p-6 sm:p-8 text-center font-display text-2xl sm:text-3xl font-bold text-slate-800 shadow-inner"></div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <button onclick="checkLatihan3A('aktif')" id="lat3A-btn-aktif" class="p-5 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 font-display text-xl font-bold text-blue-900 shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
+                            <span>🏃</span> Kalimat Aktif (me-)
+                        </button>
+                        <button onclick="checkLatihan3A('pasif')" id="lat3A-btn-pasif" class="p-5 rounded-2xl bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 font-display text-xl font-bold text-purple-900 shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2">
+                            <span>🎯</span> Kalimat Pasif (di-)
+                        </button>
+                    </div>
+
+                    <div id="lat3A-feedback" class="hidden p-4 rounded-2xl border-2 text-base font-medium"></div>
+
+                    <div class="flex justify-end">
+                        <button onclick="nextLatihan3A()" id="lat3A-next-btn" class="hidden px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-display font-bold text-lg shadow-md transition-colors">
+                            Soal Berikutnya ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BAGIAN B: Melengkapi Perubahan Kalimat Aktif <-> Pasif -->
+                <div id="lat3-part-B" class="hidden space-y-5">
+                    <div class="flex items-center justify-between">
+                        <p class="text-slate-600 font-medium">Pilih kata kerja berawalan <strong>me-</strong> atau <strong>di-</strong> yang tepat untuk melengkapi perubahan kalimat!</p>
+                        <span id="lat3B-counter" class="bg-pink-100 text-pink-800 font-bold px-3 py-1 rounded-full text-sm shrink-0">Soal 1 / 5</span>
+                    </div>
+
+                    <div class="bg-pink-50 border-2 border-pink-200 rounded-3xl p-5 sm:p-6 space-y-3">
+                        <div id="lat3B-source" class="text-sm sm:text-base font-bold text-slate-500"></div>
+                        <div id="lat3B-target" class="font-display text-2xl sm:text-3xl font-bold text-slate-800"></div>
+                    </div>
+
+                    <div id="lat3B-options" class="grid sm:grid-cols-3 gap-3"></div>
+
+                    <div id="lat3B-feedback" class="hidden p-4 rounded-2xl border-2 text-base font-medium"></div>
+
+                    <div class="flex justify-end">
+                        <button onclick="nextLatihan3B()" id="lat3B-next-btn" class="hidden px-6 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-display font-bold text-lg shadow-md transition-colors">
+                            Soal Berikutnya ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. HALAMAN KUIS SERU (12 SOAL) ==================== -->
+        <section id="page-kuis" class="page-section hidden space-y-6 animate-pop">
+
+            <!-- Layar Mulai Kuis -->
+            <div id="quiz-start-screen" class="bg-white rounded-3xl p-8 border-2 border-purple-200 shadow-xl text-center space-y-5 max-w-2xl mx-auto">
+                <div class="text-7xl animate-float">🏆</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-purple-900">Kuis Seru Bahasa Indonesia</h2>
+                <p class="text-slate-600 text-base sm:text-lg">
+                    Ayo jawab <strong>12 soal pilihan ganda</strong> seru dari semua 5 materi, termasuk <strong>Kalimat Aktif & Pasif</strong>! Kumpulkan skor tinggi dan raih <strong>3 Bintang Emas!</strong>
+                </p>
+                <div class="pt-2">
+                    <button onclick="startQuiz()" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-display font-bold text-xl px-8 py-4 rounded-2xl shadow-lg transform hover:scale-105 transition-all">
+                        🚀 Mulai Kuis Sekarang!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Layar Pertanyaan Kuis -->
+            <div id="quiz-play-screen" class="hidden bg-white rounded-3xl p-6 sm:p-8 border-2 border-purple-200 shadow-xl space-y-6 max-w-3xl mx-auto">
+                <!-- Progress Bar -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center font-bold text-sm text-purple-800">
+                        <span id="quiz-progress-text">Soal 1 dari 12</span>
+                        <span id="quiz-score-live" class="bg-purple-100 px-3 py-1 rounded-full">Benar: 0</span>
+                    </div>
+                    <div class="w-full h-4 bg-purple-100 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 8%"></div>
+                    </div>
+                </div>
+
+                <!-- Soal -->
+                <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-100">
+                    <span id="quiz-category" class="inline-block text-xs font-bold uppercase tracking-wider bg-white text-purple-700 px-3 py-1 rounded-full mb-2 border border-purple-200">Kategori</span>
+                    <h3 id="quiz-question-text" class="font-display text-xl sm:text-2xl font-bold text-slate-800 leading-snug"></h3>
+                </div>
+
+                <!-- Pilihan Ganda -->
+                <div id="quiz-options-container" class="grid sm:grid-cols-2 gap-3"></div>
+
+                <!-- Feedback -->
+                <div id="quiz-feedback-box" class="hidden p-4 rounded-2xl border-2 text-base font-medium"></div>
+
+                <!-- Tombol Lanjut -->
+                <div class="flex justify-end">
+                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-display font-bold text-lg shadow-md transition-colors">
+                        Soal Berikutnya ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Layar Hasil Akhir -->
+            <div id="quiz-result-screen" class="hidden bg-white rounded-3xl p-8 border-4 border-amber-300 shadow-2xl text-center space-y-6 max-w-2xl mx-auto animate-pop">
+                <div id="result-stars" class="text-6xl tracking-widest">⭐⭐⭐</div>
+                <h2 id="result-title" class="font-display text-3xl sm:text-4xl font-bold text-slate-800">Luar Biasa!</h2>
+                <div class="inline-block bg-amber-50 border-2 border-amber-200 rounded-3xl px-8 py-4 space-y-1">
+                    <p class="text-sm font-bold text-amber-800 uppercase">Skor Akhir Kamu</p>
+                    <p id="result-score" class="font-display text-6xl font-bold text-amber-500">100</p>
+                    <p id="result-correct-count" class="text-sm font-bold text-slate-600">Benar 12 dari 12 soal</p>
+                </div>
+                <p id="result-message" class="text-base sm:text-lg text-slate-600 font-medium"></p>
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <button onclick="startQuiz()" class="bg-purple-500 hover:bg-purple-600 text-white font-display font-bold text-lg px-6 py-3.5 rounded-2xl shadow-md transition-all">
+                        🔄 Main Lagi
+                    </button>
+                    <button onclick="switchPage('materi')" class="bg-sky-500 hover:bg-sky-600 text-white font-display font-bold text-lg px-6 py-3.5 rounded-2xl shadow-md transition-all">
+                        📖 Lihat Materi
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t-2 border-amber-100 py-4 mt-8 text-center text-sm text-slate-500 font-semibold">
+        <p>✨ Media Pembelajaran Interaktif Bahasa Indonesia Kelas 2 SD • Kurikulum Merdeka (Fase A) ✨</p>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        /* =========================================================
+           1. SISTEM SUARA (Web Audio API)
+           ========================================================= */
+        let soundEnabled = true;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx && AudioCtx) audioCtx = new AudioCtx();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTone(freq, type, duration, delay = 0, vol = 0.14) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + delay);
+                osc.stop(audioCtx.currentTime + delay + duration);
+            } catch (e) {}
+        }
+
+        function playClick() { playTone(520, 'sine', 0.08, 0, 0.1); }
+        function playMagic() {
+            [440, 554, 659, 880].forEach((f, i) => playTone(f, 'sine', 0.12, i * 0.06, 0.12));
+        }
+        function playCorrect() {
+            playTone(523.25, 'triangle', 0.14, 0);
+            playTone(659.25, 'triangle', 0.14, 0.1);
+            playTone(783.99, 'triangle', 0.24, 0.2);
+        }
+        function playWrong() {
+            playTone(260, 'sine', 0.16, 0, 0.14);
+            playTone(210, 'sine', 0.22, 0.14, 0.14);
+        }
+        function playWin() {
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => playTone(f, 'triangle', 0.26, i * 0.12));
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('sound-text').textContent = soundEnabled ? 'Suara On' : 'Suara Off';
+            if (soundEnabled) playClick();
+        }
+
+        /* =========================================================
+           2. PELACAK PROGRES BINTANG (LocalStorage)
+           ========================================================= */
+        const STORAGE_KEY = 'mpi_bindo_kls2_progress_v2';
+        let progressData = { stars: 0, bestQuiz: null };
+
+        function loadProgress() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    progressData.stars = Number(parsed.stars) || 0;
+                    progressData.bestQuiz = parsed.bestQuiz !== undefined ? parsed.bestQuiz : null;
+                }
+            } catch (e) {}
+            updateProgressUI();
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
+            } catch (e) {}
+            updateProgressUI();
+        }
+
+        function addStars(amount) {
+            progressData.stars += amount;
+            saveProgress();
+        }
+
+        function updateProgressUI() {
+            document.getElementById('header-star-count').textContent = progressData.stars;
+            document.getElementById('home-star-total').textContent = progressData.stars;
+            const bestEl = document.getElementById('home-best-quiz');
+            bestEl.textContent = progressData.bestQuiz !== null
+                ? `Skor Kuis Terbaik: ${progressData.bestQuiz}`
+                : 'Skor Kuis Terbaik: Belum ada';
+        }
+
+        function requestResetProgress() {
+            playClick();
+            document.getElementById('reset-progress-btn').classList.add('hidden');
+            document.getElementById('reset-confirm-box').classList.remove('hidden');
+        }
+
+        function cancelResetProgress() {
+            playClick();
+            document.getElementById('reset-confirm-box').classList.add('hidden');
+            document.getElementById('reset-progress-btn').classList.remove('hidden');
+        }
+
+        function confirmResetProgress() {
+            playClick();
+            progressData = { stars: 0, bestQuiz: null };
+            saveProgress();
+            cancelResetProgress();
+        }
+
+        /* =========================================================
+           3. NAVIGASI HALAMAN UTAMA
+           ========================================================= */
+        function switchPage(pageId) {
+            playClick();
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+
+            const navColors = {
+                beranda: 'bg-amber-400 text-slate-900 border-amber-500 shadow-sm',
+                materi: 'bg-sky-500 text-white border-sky-600 shadow-sm',
+                latihan: 'bg-emerald-500 text-white border-emerald-600 shadow-sm',
+                kuis: 'bg-purple-500 text-white border-purple-600 shadow-sm'
+            };
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2 bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100';
+            });
+            document.getElementById('nav-' + pageId).className =
+                'nav-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl font-display font-semibold text-sm sm:text-base transition-all border-2 ' + navColors[pageId];
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openModuleFromHome(modNum) {
+            switchPage('materi');
+            selectModule(modNum);
+        }
+
+        /* =========================================================
+           4. MATERI INTERAKTIF (5 MODUL)
+           ========================================================= */
+        function selectModule(num) {
+            playClick();
+            document.querySelectorAll('.module-content').forEach(m => m.classList.add('hidden'));
+            document.getElementById('module-' + num).classList.remove('hidden');
+
+            const modColors = {
+                1: 'bg-amber-100 border-amber-400 text-amber-950 shadow-md',
+                2: 'bg-sky-100 border-sky-400 text-sky-950 shadow-md',
+                3: 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-md',
+                4: 'bg-pink-100 border-pink-400 text-pink-950 shadow-md',
+                5: 'bg-purple-100 border-purple-400 text-purple-950 shadow-md'
+            };
+
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.getElementById('mod-btn-' + i);
+                const extraCol = i === 5 ? ' col-span-2 sm:col-span-1 relative' : '';
+                if (i === num) {
+                    btn.className = 'mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1 ' + modColors[i] + extraCol;
+                } else {
+                    btn.className = 'mod-btn p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col gap-1 bg-white border-slate-200 text-slate-600 hover:bg-slate-50' + extraCol;
+                }
+            }
+        }
+
+        // --- Modul 1: Huruf Kapital & Tanda Baca ---
+        const kapitalExamples = [
+            {
+                html: `<span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">B</span>udi bermain bola bersama <span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">D</span>oni<span class="bg-sky-200 text-sky-900 px-2 rounded font-extrabold ml-1">.</span>`,
+                desc: `Huruf <strong>B</strong> kapital di awal kalimat, <strong>D</strong> kapital untuk nama orang (Doni), dan diakhiri <strong>tanda titik (.)</strong>.`
+            },
+            {
+                html: `<span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">A</span>pa buah kesukaan <span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">S</span>iti<span class="bg-purple-200 text-purple-900 px-2 rounded font-extrabold ml-1">?</span>`,
+                desc: `Huruf <strong>A</strong> kapital di awal kalimat, <strong>S</strong> kapital untuk nama Siti, dan diakhiri <strong>tanda tanya (?)</strong>.`
+            },
+            {
+                html: `<span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">T</span>olong rapikan bukumu, <span class="bg-amber-200 text-amber-900 px-1.5 rounded font-extrabold">R</span>ani<span class="bg-rose-200 text-rose-900 px-2 rounded font-extrabold ml-1">!</span>`,
+                desc: `Huruf <strong>T</strong> kapital di awal kalimat, <strong>R</strong> kapital untuk nama Rani, dan diakhiri <strong>tanda seru (!)</strong>.`
+            }
+        ];
+
+        function showKapitalExample(idx) {
+            playClick();
+            const ex = kapitalExamples[idx];
+            document.getElementById('kapital-demo-box').innerHTML = `
+                <div class="text-2xl sm:text-3xl font-display font-bold text-slate-800 leading-relaxed">${ex.html}</div>
+                <p class="text-slate-600 text-sm sm:text-base">${ex.desc}</p>
+            `;
+        }
+
+        // --- Modul 2: Pola Kalimat S-P-O ---
+        const spoSentences = [
+            [
+                { word: 'Ibu', role: 'S', label: 'Subjek', color: 'bg-blue-500 text-white border-blue-600', info: '🔵 "Ibu" adalah SUBJEK (pelaku yang melakukan kegiatan).' },
+                { word: 'memasak', role: 'P', label: 'Predikat', color: 'bg-emerald-500 text-white border-emerald-600', info: '🟢 "memasak" adalah PREDIKAT (kegiatan/kata kerja).' },
+                { word: 'sayur', role: 'O', label: 'Objek', color: 'bg-orange-500 text-white border-orange-600', info: '🟠 "sayur" adalah OBJEK (benda yang dimasak).' }
+            ],
+            [
+                { word: 'Rani', role: 'S', label: 'Subjek', color: 'bg-blue-500 text-white border-blue-600', info: '🔵 "Rani" adalah SUBJEK (pelaku).' },
+                { word: 'membaca', role: 'P', label: 'Predikat', color: 'bg-emerald-500 text-white border-emerald-600', info: '🟢 "membaca" adalah PREDIKAT (kegiatan).' },
+                { word: 'buku cerita', role: 'O', label: 'Objek', color: 'bg-orange-500 text-white border-orange-600', info: '🟠 "buku cerita" adalah OBJEK (benda yang dibaca).' }
+            ],
+            [
+                { word: 'Kucing', role: 'S', label: 'Subjek', color: 'bg-blue-500 text-white border-blue-600', info: '🔵 "Kucing" adalah SUBJEK (hewan pelaku).' },
+                { word: 'minum', role: 'P', label: 'Predikat', color: 'bg-emerald-500 text-white border-emerald-600', info: '🟢 "minum" adalah PREDIKAT (kegiatan).' },
+                { word: 'susu hangat', role: 'O', label: 'Objek', color: 'bg-orange-500 text-white border-orange-600', info: '🟠 "susu hangat" adalah OBJEK (benda yang diminum).' }
+            ]
+        ];
+        let currentSpoIdx = 0;
+
+        function renderSpoSentence() {
+            const area = document.getElementById('spo-interactive-area');
+            area.innerHTML = '';
+            spoSentences[currentSpoIdx].forEach((item, i) => {
+                const btn = document.createElement('button');
+                btn.id = `spo-word-${i}`;
+                btn.className = 'px-6 py-4 rounded-2xl bg-white border-2 border-slate-300 shadow-sm hover:shadow-md font-display text-2xl sm:text-3xl font-bold text-slate-800 transition-all transform hover:-translate-y-1 flex flex-col items-center';
+                btn.innerHTML = `<span>${item.word}</span><span class="text-xs font-sans font-bold mt-1 opacity-60">Klik aku!</span>`;
+                btn.onclick = () => revealSpoWord(i);
+                area.appendChild(btn);
+            });
+            document.getElementById('spo-feedback').textContent = 'Ayo klik salah satu kata di atas untuk melihat apakah itu Subjek (Biru), Predikat (Hijau), atau Objek (Oranye)!';
+        }
+
+        function revealSpoWord(idx) {
+            playClick();
+            const item = spoSentences[currentSpoIdx][idx];
+            const btn = document.getElementById(`spo-word-${idx}`);
+            btn.className = `px-6 py-4 rounded-2xl border-2 shadow-md font-display text-2xl sm:text-3xl font-bold transition-all transform scale-105 flex flex-col items-center ${item.color}`;
+            btn.innerHTML = `<span>${item.word}</span><span class="text-xs font-sans font-extrabold mt-1 bg-white/25 px-2.5 py-0.5 rounded-full">${item.role} • ${item.label}</span>`;
+            document.getElementById('spo-feedback').textContent = item.info;
+        }
+
+        function changeSpoSentence(dir) {
+            playClick();
+            currentSpoIdx = (currentSpoIdx + dir + spoSentences.length) % spoSentences.length;
+            renderSpoSentence();
+        }
+
+        // --- Modul 3: Kartu Interaktif 'di' vs 'di-' ---
+        const diExamples = [
+            { text: 'di rumah', type: 'pisah', emoji: '🏠', exp: '📍 DIPISAH karena "rumah" adalah nama tempat.' },
+            { text: 'dimakan', type: 'gabung', emoji: '🍎', exp: '⚙️ DIGABUNG karena "makan" adalah kata kerja pasif.' },
+            { text: 'di sekolah', type: 'pisah', emoji: '🏫', exp: '📍 DIPISAH karena "sekolah" adalah nama tempat.' },
+            { text: 'ditulis', type: 'gabung', emoji: '✍️', exp: '⚙️ DIGABUNG karena "tulis" adalah kata kerja pasif.' },
+            { text: 'di taman', type: 'pisah', emoji: '🌳', exp: '📍 DIPISAH karena "taman" adalah nama tempat.' },
+            { text: 'dibaca', type: 'gabung', emoji: '📖', exp: '⚙️ DIGABUNG karena "baca" adalah kata kerja pasif.' },
+            { text: 'di kelas', type: 'pisah', emoji: '🪑', exp: '📍 DIPISAH karena "kelas" adalah nama tempat.' },
+            { text: 'disiram', type: 'gabung', emoji: '🚿', exp: '⚙️ DIGABUNG karena "siram" adalah kata kerja pasif.' }
+        ];
+
+        function renderDiCards() {
+            const grid = document.getElementById('di-cards-grid');
+            grid.innerHTML = diExamples.map((item, idx) => `
+                <button onclick="showDiExplain(${idx})" class="p-3.5 rounded-2xl border-2 ${item.type === 'pisah' ? 'bg-teal-50 border-teal-200 hover:bg-teal-100 text-teal-900' : 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 text-indigo-900'} font-display font-bold text-lg flex flex-col items-center gap-1 shadow-sm transition-transform hover:-translate-y-0.5">
+                    <span class="text-2xl">${item.emoji}</span>
+                    <span>${item.text}</span>
+                </button>
+            `).join('');
+        }
+
+        function showDiExplain(idx) {
+            playClick();
+            const item = diExamples[idx];
+            const box = document.getElementById('di-card-explain');
+            box.innerHTML = `<span class="animate-pop"><strong>"${item.text}"</strong> → ${item.exp}</span>`;
+        }
+
+        // --- Modul 4: Flashcard Kata Lawan (Antonim) ---
+        const antonimCards = [
+            { word: 'Besar', emoji: '🐘', opp: 'Kecil', oppEmoji: '🐜', bgFront: 'bg-sky-100 border-sky-300', bgBack: 'bg-amber-100 border-amber-300' },
+            { word: 'Siang', emoji: '☀️', opp: 'Malam', oppEmoji: '🌙', bgFront: 'bg-yellow-100 border-yellow-300', bgBack: 'bg-indigo-100 border-indigo-300' },
+            { word: 'Bersih', emoji: '✨', opp: 'Kotor', oppEmoji: '🦠', bgFront: 'bg-emerald-100 border-emerald-300', bgBack: 'bg-orange-100 border-orange-300' },
+            { word: 'Panjang', emoji: '🐍', opp: 'Pendek', oppEmoji: '🐛', bgFront: 'bg-teal-100 border-teal-300', bgBack: 'bg-pink-100 border-pink-300' },
+            { word: 'Panas', emoji: '🔥', opp: 'Dingin', oppEmoji: '❄️', bgFront: 'bg-rose-100 border-rose-300', bgBack: 'bg-cyan-100 border-cyan-300' },
+            { word: 'Rajin', emoji: '📚', opp: 'Malas', oppEmoji: '😴', bgFront: 'bg-purple-100 border-purple-300', bgBack: 'bg-slate-200 border-slate-300' }
+        ];
+
+        function renderFlashcards() {
+            const grid = document.getElementById('flashcard-grid');
+            grid.innerHTML = antonimCards.map((c, idx) => `
+                <div onclick="flipCard(${idx})" class="cursor-pointer perspective-1000 h-44">
+                    <div id="card-inner-${idx}" class="relative w-full h-full transition-transform duration-500 transform-style-3d">
+                        <div class="absolute inset-0 backface-hidden rounded-3xl border-2 ${c.bgFront} flex flex-col items-center justify-center p-4 shadow-sm hover:shadow-md">
+                            <span class="text-5xl mb-2">${c.emoji}</span>
+                            <span class="font-display text-2xl font-bold text-slate-800">${c.word}</span>
+                            <span class="text-xs font-bold text-slate-500 mt-1">Klik untuk balik 🔄</span>
+                        </div>
+                        <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-3xl border-2 ${c.bgBack} flex flex-col items-center justify-center p-4 shadow-md">
+                            <span class="text-xs font-bold uppercase text-slate-500 mb-1">Lawan Kata ${c.word}:</span>
+                            <span class="text-5xl mb-1">${c.oppEmoji}</span>
+                            <span class="font-display text-2xl font-bold text-slate-800">${c.opp}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function flipCard(idx) {
+            playClick();
+            document.getElementById(`card-inner-${idx}`).classList.toggle('rotate-y-180');
+        }
+
+        // --- Modul 5 (BARU): Simulasi Sulap Kalimat Aktif <-> Pasif ---
+        const magicSentences = [
+            { title: '🍲 Ibu & Sayur', s: 'Ibu', vAct: 'memasak', vPas: 'dimasak', o: 'sayur', oCap: 'Sayur' },
+            { title: '📖 Rani & Buku', s: 'Rani', vAct: 'membaca', vPas: 'dibaca', o: 'buku', oCap: 'Buku' },
+            { title: '🌻 Budi & Bunga', s: 'Budi', vAct: 'menyiram', vPas: 'disiram', o: 'bunga', oCap: 'Bunga' },
+            { title: '🐱 Kucing & Tikus', s: 'Kucing', vAct: 'menangkap', vPas: 'ditangkap', o: 'tikus', oCap: 'Tikus' },
+            { title: '⚽ Andi & Bola', s: 'Andi', vAct: 'melempar', vPas: 'dilempar', o: 'bola', oCap: 'Bola' }
+        ];
+        let magicIdx = 0;
+        let isPassiveMode = false;
+
+        function renderMagicSelector() {
+            const sel = document.getElementById('magic-selector');
+            sel.innerHTML = magicSentences.map((item, idx) => `
+                <button onclick="selectMagicSentence(${idx})" class="px-3.5 py-2 rounded-xl font-bold text-sm border-2 transition-all ${idx === magicIdx ? 'bg-purple-500 text-white border-purple-600 shadow-sm' : 'bg-white text-slate-700 border-purple-200 hover:bg-purple-100'}">
+                    ${item.title}
+                </button>
+            `).join('');
+        }
+
+        function selectMagicSentence(idx) {
+            playClick();
+            magicIdx = idx;
+            isPassiveMode = false;
+            renderMagicSelector();
+            renderMagicStage(false);
+        }
+
+        function toggleMagicVoice() {
+            playMagic();
+            isPassiveMode = !isPassiveMode;
+            renderMagicStage(true);
+        }
+
+        function renderMagicStage(animate) {
+            const data = magicSentences[magicIdx];
+            const badge = document.getElementById('magic-mode-badge');
+            const stage = document.getElementById('magic-stage');
+            const btn = document.getElementById('magic-toggle-btn');
+            const explain = document.getElementById('magic-explain');
+            const animClass = animate ? 'animate-swap' : '';
+
+            if (!isPassiveMode) {
+                // Mode Kalimat AKTIF
+                badge.className = 'px-4 py-1.5 rounded-full font-display font-bold text-base shadow-sm border-2 bg-blue-100 text-blue-800 border-blue-300';
+                badge.textContent = '🏃 Mode: KALIMAT AKTIF (Awalan me-)';
+
+                const prefix = data.vAct.slice(0, 2);
+                const rest = data.vAct.slice(2);
+                stage.innerHTML = `
+                    <div class="${animClass} flex flex-col items-center bg-blue-500 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-blue-600">
+                        <span class="font-display text-2xl sm:text-3xl font-bold">${data.s}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Subjek (Pelaku)</span>
+                    </div>
+                    <div class="${animClass} flex flex-col items-center bg-emerald-500 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-emerald-600">
+                        <span class="font-display text-2xl sm:text-3xl font-bold"><span class="bg-amber-300 text-slate-900 px-1 rounded">${prefix}</span>${rest}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Predikat Aktif (me-)</span>
+                    </div>
+                    <div class="${animClass} flex flex-col items-center bg-orange-500 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-orange-600">
+                        <span class="font-display text-2xl sm:text-3xl font-bold">${data.o}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Objek (Benda)</span>
+                    </div>
+                `;
+                btn.innerHTML = '🪄 Ubah ke Kalimat Pasif!';
+                explain.innerHTML = `Pada <strong>Kalimat Aktif</strong>, <span class="text-blue-600 font-bold">${data.s}</span> (pelaku) ada di depan dan melakukan pekerjaan <span class="text-emerald-600 font-bold">${data.vAct}</span>.`;
+            } else {
+                // Mode Kalimat PASIF
+                badge.className = 'px-4 py-1.5 rounded-full font-display font-bold text-base shadow-sm border-2 bg-purple-100 text-purple-800 border-purple-300';
+                badge.textContent = '🎯 Mode: KALIMAT PASIF (Awalan di-)';
+
+                const prefix = data.vPas.slice(0, 2);
+                const rest = data.vPas.slice(2);
+                stage.innerHTML = `
+                    <div class="${animClass} flex flex-col items-center bg-orange-500 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-orange-600">
+                        <span class="font-display text-2xl sm:text-3xl font-bold">${data.oCap}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Pindah ke Depan!</span>
+                    </div>
+                    <div class="${animClass} flex flex-col items-center bg-purple-600 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-purple-700">
+                        <span class="font-display text-2xl sm:text-3xl font-bold"><span class="bg-amber-300 text-slate-900 px-1 rounded">${prefix}</span>${rest}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Predikat Pasif (di-)</span>
+                    </div>
+                    <div class="${animClass} px-3 py-2 font-display text-xl sm:text-2xl font-bold text-slate-500">oleh</div>
+                    <div class="${animClass} flex flex-col items-center bg-blue-500 text-white px-5 py-3.5 rounded-2xl shadow-md border-2 border-blue-600">
+                        <span class="font-display text-2xl sm:text-3xl font-bold">${data.s}</span>
+                        <span class="text-xs font-extrabold bg-white/25 px-2.5 py-0.5 rounded-full mt-1">Pelaku di Belakang!</span>
+                    </div>
+                `;
+                btn.innerHTML = '🪄 Ubah ke Kalimat Aktif!';
+                explain.innerHTML = `✨ <strong>Simsalabim!</strong> <span class="text-orange-600 font-bold">${data.oCap}</span> berpindah ke depan, <span class="text-blue-600 font-bold">${data.s}</span> pindah ke belakang, dan <strong>${data.vAct}</strong> berubah menjadi <strong class="text-purple-700">${data.vPas}</strong>!`;
+            }
+        }
+
+        /* =========================================================
+           5. LATIHAN SOAL KEBAHASAAN (3 JENIS LATIHAN)
+           ========================================================= */
+        function selectLatihan(num) {
+            playClick();
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`latihan-${i}`).classList.toggle('hidden', i !== num);
+                const btn = document.getElementById(`lat-btn-${i}`);
+                if (i === num) {
+                    const colors = {
+                        1: 'bg-emerald-500 text-white border-emerald-600 shadow-md',
+                        2: 'bg-amber-400 text-slate-900 border-amber-500 shadow-md',
+                        3: 'bg-purple-500 text-white border-purple-600 shadow-md'
+                    };
+                    btn.className = 'lat-btn p-4 rounded-2xl font-display font-bold text-base sm:text-lg border-2 transition-all ' + colors[i];
+                } else {
+                    btn.className = 'lat-btn p-4 rounded-2xl font-display font-bold text-base sm:text-lg border-2 transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+                }
+            }
+        }
+
+        // --- LATIHAN 1: Susun Kalimat S-P-O ---
+        const lat1Data = [
+            { words: ['makan', 'Adik', 'pisang'], answer: 'Adik makan pisang', explain: 'Subjek (Adik) + Predikat (makan) + Objek (pisang).' },
+            { words: ['bunga', 'menyiram', 'Siti'], answer: 'Siti menyiram bunga', explain: 'Subjek (Siti) + Predikat (menyiram) + Objek (bunga).' },
+            { words: ['Ayah', 'koran', 'membaca'], answer: 'Ayah membaca koran', explain: 'Subjek (Ayah) + Predikat (membaca) + Objek (koran).' },
+            { words: ['menangkap', 'Kucing', 'tikus'], answer: 'Kucing menangkap tikus', explain: 'Subjek (Kucing) + Predikat (menangkap) + Objek (tikus).' },
+            { words: ['menggambar', 'Rani', 'gunung'], answer: 'Rani menggambar gunung', explain: 'Subjek (Rani) + Predikat (menggambar) + Objek (gunung).' }
+        ];
+        let lat1Idx = 0;
+        let lat1Selected = [];
+
+        function renderLatihan1() {
+            const data = lat1Data[lat1Idx];
+            lat1Selected = [];
+            document.getElementById('lat1-counter').textContent = `Soal ${lat1Idx + 1} / ${lat1Data.length}`;
+            document.getElementById('lat1-feedback').classList.add('hidden');
+            document.getElementById('lat1-next-btn').classList.add('hidden');
+            document.getElementById('lat1-check-btn').classList.remove('hidden');
+
+            updateLat1AnswerZone();
+            const bank = document.getElementById('lat1-word-bank');
+            bank.innerHTML = '';
+            data.words.forEach((w, i) => {
+                const btn = document.createElement('button');
+                btn.id = `lat1-word-${i}`;
+                btn.textContent = w;
+                btn.className = 'px-5 py-3 rounded-2xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 font-display text-xl font-bold text-slate-800 shadow-sm transition-all';
+                btn.onclick = () => pickLat1Word(i, w);
+                bank.appendChild(btn);
+            });
+        }
+
+        function pickLat1Word(index, word) {
+            playClick();
+            lat1Selected.push({ index, word });
+            const btn = document.getElementById(`lat1-word-${index}`);
+            btn.disabled = true;
+            btn.classList.add('opacity-30', 'cursor-not-allowed');
+            updateLat1AnswerZone();
+        }
+
+        function updateLat1AnswerZone() {
+            const zone = document.getElementById('lat1-answer-zone');
+            if (lat1Selected.length === 0) {
+                zone.innerHTML = `<span class="text-slate-400 font-semibold italic">Klik kata di bawah untuk menyusun kalimat...</span>`;
+                return;
+            }
+            zone.innerHTML = lat1Selected.map(item => `
+                <span class="px-5 py-2.5 rounded-2xl bg-sky-500 text-white font-display text-xl font-bold shadow-sm animate-pop">${item.word}</span>
+            `).join('');
+        }
+
+        function resetLatihan1() {
+            playClick();
+            renderLatihan1();
+        }
+
+        function checkLatihan1() {
+            const fb = document.getElementById('lat1-feedback');
+            const item = lat1Data[lat1Idx];
+            if (lat1Selected.length < item.words.length) {
+                playWrong();
+                fb.className = 'p-4 rounded-2xl font-bold text-center text-base bg-amber-100 text-amber-900 border-2 border-amber-300';
+                fb.textContent = '⚠️ Ayo klik semua kata terlebih dahulu ya!';
+                fb.classList.remove('hidden');
+                return;
+            }
+            const userAns = lat1Selected.map(x => x.word).join(' ');
+            if (userAns === item.answer) {
+                playCorrect();
+                addStars(1);
+                fb.className = 'p-4 rounded-2xl font-bold text-center text-base sm:text-lg bg-emerald-100 text-emerald-900 border-2 border-emerald-300 animate-pop';
+                fb.innerHTML = `🎉 Benar! (+1 ⭐) <strong>"${item.answer}."</strong><br><span class="text-sm font-medium">${item.explain}</span>`;
+                document.getElementById('lat1-check-btn').classList.add('hidden');
+                document.getElementById('lat1-next-btn').classList.remove('hidden');
+            } else {
+                playWrong();
+                fb.className = 'p-4 rounded-2xl font-bold text-center text-base bg-rose-100 text-rose-800 border-2 border-rose-300';
+                fb.textContent = '❌ Belum tepat! Ingat urutan S-P-O (Pelaku - Kegiatan - Benda). Klik Reset untuk mencoba lagi.';
+            }
+            fb.classList.remove('hidden');
+        }
+
+        function nextLatihan1() {
+            playClick();
+            lat1Idx = (lat1Idx + 1) % lat1Data.length;
+            renderLatihan1();
+        }
+
+        // --- LATIHAN 2: Perbaiki Ejaan ---
+        const lat2Data = [
+            {
+                q: 'Manakah penulisan huruf kapital dan tanda baca yang BENAR?',
+                options: ['rina membeli roti di pasar.', 'Rina membeli roti di pasar.', 'Rina membeli roti di pasar?'],
+                correct: 1,
+                explain: 'Awal kalimat dan nama orang (Rina) memakai huruf kapital, serta diakhiri tanda titik (.).'
+            },
+            {
+                q: 'Manakah penulisan kata depan "di" yang BENAR untuk tempat?',
+                options: ['Tas itu ada dimeja.', 'Tas itu ada di meja.', 'Tas itu ada di-meja.'],
+                correct: 1,
+                explain: '"meja" adalah tempat, sehingga "di" harus ditulis terpisah: "di meja".'
+            },
+            {
+                q: 'Manakah penulisan awalan "di-" yang BENAR untuk kata kerja?',
+                options: ['Kue itu di makan adik.', 'Kue itu dimakan adik.', 'Kue itu di-makan adik.'],
+                correct: 1,
+                explain: '"makan" adalah kata kerja, jadi awalan "di-" ditulis digabung: "dimakan".'
+            },
+            {
+                q: 'Manakah penulisan kalimat tanya yang BENAR?',
+                options: ['Siapa nama teman barumu?', 'siapa nama teman barumu?', 'Siapa nama teman barumu!'],
+                correct: 0,
+                explain: 'Kalimat tanya diawali huruf kapital dan diakhiri tanda tanya (?).'
+            },
+            {
+                q: 'Pilihlah kalimat perintah yang benar:',
+                options: ['buang sampah pada tempatnya.', 'Buang sampah pada tempatnya?', 'Buang sampah pada tempatnya!'],
+                correct: 2,
+                explain: 'Kalimat perintah diawali huruf kapital dan diakhiri tanda seru (!).'
+            }
+        ];
+        let lat2Idx = 0;
+        let lat2Answered = false;
+
+        function renderLatihan2() {
+            lat2Answered = false;
+            const item = lat2Data[lat2Idx];
+            document.getElementById('lat2-counter').textContent = `Soal ${lat2Idx + 1} / ${lat2Data.length}`;
+            document.getElementById('lat2-question').textContent = item.q;
+            document.getElementById('lat2-feedback').classList.add('hidden');
+            document.getElementById('lat2-next-btn').classList.add('hidden');
+
+            document.getElementById('lat2-options').innerHTML = item.options.map((opt, idx) => `
+                <button onclick="checkLatihan2(${idx})" id="lat2-opt-${idx}" class="text-left p-4 rounded-2xl bg-slate-50 hover:bg-amber-50 border-2 border-slate-200 hover:border-amber-300 font-bold text-base sm:text-lg text-slate-800 transition-all">
+                    ${String.fromCharCode(65 + idx)}. ${opt}
+                </button>
+            `).join('');
+        }
+
+        function checkLatihan2(selIdx) {
+            if (lat2Answered) return;
+            lat2Answered = true;
+            const item = lat2Data[lat2Idx];
+            const fb = document.getElementById('lat2-feedback');
+
+            if (selIdx === item.correct) {
+                playCorrect();
+                addStars(1);
+                document.getElementById(`lat2-opt-${selIdx}`).className = 'text-left p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-bold text-base sm:text-lg text-emerald-900';
+                fb.className = 'p-4 rounded-2xl font-medium text-base border-2 bg-emerald-50 border-emerald-300 text-emerald-900 animate-pop';
+                fb.innerHTML = `✅ <strong>Hebat! Jawabanmu Benar (+1 ⭐).</strong><br>${item.explain}`;
+            } else {
+                playWrong();
+                document.getElementById(`lat2-opt-${selIdx}`).className = 'text-left p-4 rounded-2xl bg-rose-100 border-2 border-rose-500 font-bold text-base sm:text-lg text-rose-900';
+                document.getElementById(`lat2-opt-${item.correct}`).className = 'text-left p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-bold text-base sm:text-lg text-emerald-900';
+                fb.className = 'p-4 rounded-2xl font-medium text-base border-2 bg-rose-50 border-rose-300 text-rose-900 animate-pop';
+                fb.innerHTML = `❌ <strong>Belum tepat.</strong><br>${item.explain}`;
+            }
+            fb.classList.remove('hidden');
+            document.getElementById('lat2-next-btn').classList.remove('hidden');
+        }
+
+        function nextLatihan2() {
+            playClick();
+            lat2Idx = (lat2Idx + 1) % lat2Data.length;
+            renderLatihan2();
+        }
+
+        // --- LATIHAN 3 (BARU): Bagian A (Tebak Aktif/Pasif) & Bagian B (Ubah Kalimat) ---
+        function selectLatihan3Part(part) {
+            playClick();
+            document.getElementById('lat3-part-A').classList.toggle('hidden', part !== 'A');
+            document.getElementById('lat3-part-B').classList.toggle('hidden', part !== 'B');
+
+            const btnA = document.getElementById('lat3-partA-btn');
+            const btnB = document.getElementById('lat3-partB-btn');
+            if (part === 'A') {
+                btnA.className = 'px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all bg-purple-600 text-white border-purple-700 shadow-sm';
+                btnB.className = 'px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+            } else {
+                btnB.className = 'px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all bg-pink-500 text-white border-pink-600 shadow-sm';
+                btnA.className = 'px-4 py-2 rounded-xl font-bold text-sm border-2 transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+            }
+        }
+
+        const lat3AData = [
+            { text: 'Budi menyiram bunga di halaman.', type: 'aktif', exp: 'Subjek (Budi) melakukan pekerjaan dan kata kerjanya "menyiram" (awalan me-), jadi ini Kalimat Aktif.' },
+            { text: 'Buku cerita dibaca oleh Rani.', type: 'pasif', exp: 'Kata kerjanya "dibaca" (awalan di-) dan subjek dikenai pekerjaan, jadi ini Kalimat Pasif.' },
+            { text: 'Kue pisang dimakan oleh adik.', type: 'pasif', exp: 'Kata kerjanya "dimakan" (awalan di-), sehingga ini adalah Kalimat Pasif.' },
+            { text: 'Ayah mencuci sepeda motor.', type: 'aktif', exp: 'Subjek (Ayah) melakukan pekerjaan dan kata kerjanya "mencuci" (awalan me-), jadi ini Kalimat Aktif.' },
+            { text: 'Bola dilempar oleh Andi.', type: 'pasif', exp: 'Kata kerjanya "dilempar" (awalan di-), jadi ini adalah Kalimat Pasif.' }
+        ];
+        let lat3AIdx = 0;
+        let lat3AAnswered = false;
+
+        function renderLatihan3A() {
+            lat3AAnswered = false;
+            const item = lat3AData[lat3AIdx];
+            document.getElementById('lat3A-counter').textContent = `Soal ${lat3AIdx + 1} / ${lat3AData.length}`;
+            document.getElementById('lat3A-sentence').textContent = `"${item.text}"`;
+            document.getElementById('lat3A-feedback').classList.add('hidden');
+            document.getElementById('lat3A-next-btn').classList.add('hidden');
+
+            document.getElementById('lat3A-btn-aktif').className = 'p-5 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 font-display text-xl font-bold text-blue-900 shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2';
+            document.getElementById('lat3A-btn-pasif').className = 'p-5 rounded-2xl bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 font-display text-xl font-bold text-purple-900 shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2';
+        }
+
+        function checkLatihan3A(choice) {
+            if (lat3AAnswered) return;
+            lat3AAnswered = true;
+            const item = lat3AData[lat3AIdx];
+            const fb = document.getElementById('lat3A-feedback');
+
+            if (choice === item.type) {
+                playCorrect();
+                addStars(1);
+                document.getElementById(`lat3A-btn-${choice}`).classList.add('ring-4', 'ring-emerald-400', 'bg-emerald-100');
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-emerald-50 border-emerald-300 text-emerald-900 animate-pop';
+                fb.innerHTML = `🎉 <strong>Benar Sekali! (+1 ⭐)</strong><br>${item.exp}`;
+            } else {
+                playWrong();
+                document.getElementById(`lat3A-btn-${choice}`).classList.add('ring-4', 'ring-rose-400', 'bg-rose-100');
+                document.getElementById(`lat3A-btn-${item.type}`).classList.add('ring-4', 'ring-emerald-400', 'bg-emerald-100');
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-rose-50 border-rose-300 text-rose-900 animate-pop';
+                fb.innerHTML = `😅 <strong>Ups, belum tepat!</strong><br>${item.exp}`;
+            }
+            fb.classList.remove('hidden');
+            document.getElementById('lat3A-next-btn').classList.remove('hidden');
+        }
+
+        function nextLatihan3A() {
+            playClick();
+            lat3AIdx = (lat3AIdx + 1) % lat3AData.length;
+            renderLatihan3A();
+        }
+
+        // Bagian B: Lengkapi Perubahan Kalimat
+        const lat3BData = [
+            {
+                source: 'Kalimat Aktif: "Andi menendang bola."',
+                target: 'Kalimat Pasif: "Bola _____ oleh Andi."',
+                opts: ['menendang', 'ditendang', 'di tendang'],
+                ans: 1,
+                exp: 'Saat diubah ke kalimat pasif, kata "menendang" berubah menjadi "ditendang" (digabung).'
+            },
+            {
+                source: 'Kalimat Aktif: "Ibu memasak sup jagung."',
+                target: 'Kalimat Pasif: "Sup jagung _____ oleh Ibu."',
+                opts: ['dimasak', 'memasak', 'di masak'],
+                ans: 0,
+                exp: 'Kata kerja aktif "memasak" berubah menjadi kata kerja pasif "dimasak".'
+            },
+            {
+                source: 'Kalimat Pasif: "Lantai disapu oleh Siti."',
+                target: 'Kalimat Aktif: "Siti _____ lantai."',
+                opts: ['disapu', 'menyapu', 'di sapu'],
+                ans: 1,
+                exp: 'Saat diubah ke kalimat aktif, kata "disapu" berubah menjadi "menyapu" (awalan me-).'
+            },
+            {
+                source: 'Kalimat Aktif: "Kucing menangkap tikus."',
+                target: 'Kalimat Pasif: "Tikus _____ oleh kucing."',
+                opts: ['menangkap', 'di tangkap', 'ditangkap'],
+                ans: 2,
+                exp: 'Kata "menangkap" berubah menjadi "ditangkap" pada kalimat pasif.'
+            },
+            {
+                source: 'Kalimat Pasif: "Surat ditulis oleh Kakak."',
+                target: 'Kalimat Aktif: "Kakak _____ surat."',
+                opts: ['menulis', 'ditulis', 'di tulis'],
+                ans: 0,
+                exp: 'Kata pasif "ditulis" berubah menjadi kata aktif "menulis".'
+            }
+        ];
+        let lat3BIdx = 0;
+        let lat3BAnswered = false;
+
+        function renderLatihan3B() {
+            lat3BAnswered = false;
+            const item = lat3BData[lat3BIdx];
+            document.getElementById('lat3B-counter').textContent = `Soal ${lat3BIdx + 1} / ${lat3BData.length}`;
+            document.getElementById('lat3B-source').textContent = item.source;
+            document.getElementById('lat3B-target').textContent = item.target;
+            document.getElementById('lat3B-feedback').classList.add('hidden');
+            document.getElementById('lat3B-next-btn').classList.add('hidden');
+
+            document.getElementById('lat3B-options').innerHTML = item.opts.map((opt, idx) => `
+                <button onclick="checkLatihan3B(${idx})" id="lat3B-opt-${idx}" class="p-4 rounded-2xl bg-slate-50 hover:bg-pink-50 border-2 border-slate-200 hover:border-pink-300 font-display text-xl font-bold text-slate-800 transition-all">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function checkLatihan3B(idx) {
+            if (lat3BAnswered) return;
+            lat3BAnswered = true;
+            const item = lat3BData[lat3BIdx];
+            const fb = document.getElementById('lat3B-feedback');
+
+            if (idx === item.ans) {
+                playCorrect();
+                addStars(1);
+                document.getElementById(`lat3B-opt-${idx}`).className = 'p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-display text-xl font-bold text-emerald-900';
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-emerald-50 border-emerald-300 text-emerald-900 animate-pop';
+                fb.innerHTML = `🎉 <strong>Tepat Sekali! (+1 ⭐)</strong><br>${item.exp}`;
+            } else {
+                playWrong();
+                document.getElementById(`lat3B-opt-${idx}`).className = 'p-4 rounded-2xl bg-rose-100 border-2 border-rose-500 font-display text-xl font-bold text-rose-900';
+                document.getElementById(`lat3B-opt-${item.ans}`).className = 'p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-display text-xl font-bold text-emerald-900';
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-rose-50 border-rose-300 text-rose-900 animate-pop';
+                fb.innerHTML = `😅 <strong>Belum tepat.</strong><br>${item.exp}`;
+            }
+            fb.classList.remove('hidden');
+            document.getElementById('lat3B-next-btn').classList.remove('hidden');
+        }
+
+        function nextLatihan3B() {
+            playClick();
+            lat3BIdx = (lat3BIdx + 1) % lat3BData.length;
+            renderLatihan3B();
+        }
+
+        /* =========================================================
+           6. KUIS SERU (12 SOAL PILIHAN GANDA + BINTANG + KONFETI)
+           ========================================================= */
+        const quizQuestions = [
+            {
+                cat: 'Huruf Kapital',
+                q: 'Manakah penulisan huruf kapital pada nama orang yang BENAR?',
+                opts: ['ibu dan budi', 'Ibu dan Budi', 'ibu dan Budi', 'Ibu dan budi'],
+                ans: 1,
+                exp: 'Awal kalimat (Ibu) dan nama orang (Budi) harus ditulis dengan huruf kapital.'
+            },
+            {
+                cat: 'Tanda Baca',
+                q: 'Tanda baca yang tepat untuk kalimat "Di mana rumahmu___" adalah...',
+                opts: ['Titik (.)', 'Koma (,)', 'Tanya (?)', 'Seru (!)'],
+                ans: 2,
+                exp: 'Kalimat tersebut menanyakan tempat, jadi diakhiri tanda tanya (?).'
+            },
+            {
+                cat: 'Pola S-P-O',
+                q: 'Pada kalimat "Ayah mencuci mobil", kata "mencuci" adalah...',
+                opts: ['Subjek (S)', 'Predikat (P)', 'Objek (O)', 'Keterangan'],
+                ans: 1,
+                exp: '"mencuci" adalah kegiatan atau kata kerja, sehingga disebut Predikat (P).'
+            },
+            {
+                cat: 'Pola S-P-O',
+                q: 'Pada kalimat "Siti menulis surat", yang menjadi Objek (O) adalah...',
+                opts: ['Siti', 'menulis', 'surat', 'Siti menulis'],
+                ans: 2,
+                exp: '"surat" adalah benda yang ditulis oleh Siti, jadi "surat" adalah Objek (O).'
+            },
+            {
+                cat: 'Kata Depan di',
+                q: 'Anak-anak sedang membaca buku ... perpustakaan.',
+                opts: ['di', 'di-', 'ke-', 'ter-'],
+                ans: 0,
+                exp: 'Perpustakaan adalah nama tempat, sehingga ditulis terpisah: "di perpustakaan".'
+            },
+            {
+                cat: 'Awalan di-',
+                q: 'Manakah penulisan kata kerja pasif yang BENAR?',
+                opts: ['di sapu', 'di baca', 'disiram', 'di tulis'],
+                ans: 2,
+                exp: 'Awalan di- pada kata kerja harus ditulis digabung tanpa spasi, yaitu "disiram".'
+            },
+            {
+                cat: 'Antonim',
+                q: 'Lawan kata (antonim) dari "Panas" adalah...',
+                opts: ['Hangat', 'Dingin', 'Siang', 'Kering'],
+                ans: 1,
+                exp: 'Lawan kata dari panas adalah dingin.'
+            },
+            {
+                cat: 'Antonim',
+                q: 'Lawan kata dari "Bersih" adalah...',
+                opts: ['Rapi', 'Wangi', 'Kotor', 'Indah'],
+                ans: 2,
+                exp: 'Lawan kata dari bersih adalah kotor.'
+            },
+            {
+                cat: 'Kalimat Aktif',
+                q: 'Manakah di bawah ini yang merupakan KALIMAT AKTIF?',
+                opts: ['Bunga disiram oleh Budi.', 'Budi menyiram bunga.', 'Buku dibaca oleh Rani.', 'Sayur dimasak oleh Ibu.'],
+                ans: 1,
+                exp: '"Budi menyiram bunga." adalah kalimat aktif karena subjek (Budi) melakukan pekerjaan (menyiram).'
+            },
+            {
+                cat: 'Kalimat Pasif',
+                q: 'Manakah di bawah ini yang merupakan KALIMAT PASIF?',
+                opts: ['Kucing menangkap tikus.', 'Andi melempar bola.', 'Tikus ditangkap oleh kucing.', 'Rani membaca buku.'],
+                ans: 2,
+                exp: '"Tikus ditangkap oleh kucing." adalah kalimat pasif karena memakai kata kerja berawalan di- (ditangkap).'
+            },
+            {
+                cat: 'Ubah Aktif → Pasif',
+                q: 'Bentuk kalimat PASIF dari "Ibu memasak sayur" adalah...',
+                opts: ['Sayur memasak Ibu.', 'Sayur dimasak oleh Ibu.', 'Ibu dimasak sayur.', 'Sayur di masak oleh Ibu.'],
+                ans: 1,
+                exp: 'Objek (Sayur) pindah ke depan, "memasak" berubah menjadi "dimasak", dan "Ibu" di belakang: "Sayur dimasak oleh Ibu."'
+            },
+            {
+                cat: 'Ubah Pasif → Aktif',
+                q: 'Bentuk kalimat AKTIF dari "Bola dilempar oleh Andi" adalah...',
+                opts: ['Andi melempar bola.', 'Andi dilempar bola.', 'Bola melempar Andi.', 'Andi lempar bola.'],
+                ans: 0,
+                exp: 'Pelaku (Andi) pindah ke depan dan "dilempar" berubah menjadi "melempar": "Andi melempar bola."'
+            }
+        ];
+
+        let quizIdx = 0;
+        let quizCorrect = 0;
+        let quizAnswered = false;
+
+        function startQuiz() {
+            playClick();
+            quizIdx = 0;
+            quizCorrect = 0;
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+            stopConfetti();
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            quizAnswered = false;
+            const q = quizQuestions[quizIdx];
+            document.getElementById('quiz-progress-text').textContent = `Soal ${quizIdx + 1} dari ${quizQuestions.length}`;
+            document.getElementById('quiz-score-live').textContent = `Benar: ${quizCorrect}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((quizIdx + 1) / quizQuestions.length) * 100}%`;
+
+            document.getElementById('quiz-category').textContent = q.cat;
+            document.getElementById('quiz-question-text').textContent = q.q;
+            document.getElementById('quiz-feedback-box').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+
+            document.getElementById('quiz-options-container').innerHTML = q.opts.map((opt, i) => `
+                <button onclick="answerQuiz(${i})" id="q-opt-${i}" class="p-4 rounded-2xl bg-slate-50 hover:bg-purple-50 border-2 border-slate-200 hover:border-purple-300 font-bold text-base sm:text-lg text-left text-slate-800 transition-all">
+                    <span class="inline-block w-8 h-8 rounded-full bg-purple-100 text-purple-700 text-center leading-8 mr-2">${String.fromCharCode(65 + i)}</span>
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function answerQuiz(idx) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+            const q = quizQuestions[quizIdx];
+            const fb = document.getElementById('quiz-feedback-box');
+
+            if (idx === q.ans) {
+                quizCorrect++;
+                playCorrect();
+                document.getElementById(`q-opt-${idx}`).className = 'p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-bold text-base sm:text-lg text-left text-emerald-900';
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-emerald-50 border-emerald-300 text-emerald-900 animate-pop';
+                fb.innerHTML = `🎉 <strong>Benar!</strong><br>${q.exp}`;
+            } else {
+                playWrong();
+                document.getElementById(`q-opt-${idx}`).className = 'p-4 rounded-2xl bg-rose-100 border-2 border-rose-500 font-bold text-base sm:text-lg text-left text-rose-900';
+                document.getElementById(`q-opt-${q.ans}`).className = 'p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 font-bold text-base sm:text-lg text-left text-emerald-900';
+                fb.className = 'p-4 rounded-2xl border-2 text-base font-medium bg-rose-50 border-rose-300 text-rose-900 animate-pop';
+                fb.innerHTML = `😅 <strong>Ups, belum tepat!</strong><br>${q.exp}`;
+            }
+
+            document.getElementById('quiz-score-live').textContent = `Benar: ${quizCorrect}`;
+            fb.classList.remove('hidden');
+
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.textContent = (quizIdx === quizQuestions.length - 1) ? 'Lihat Hasil 🏆' : 'Soal Berikutnya ➡️';
+            nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            playClick();
+            if (quizIdx < quizQuestions.length - 1) {
+                quizIdx++;
+                renderQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            playWin();
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            const finalScore = Math.round((quizCorrect / quizQuestions.length) * 100);
+            document.getElementById('result-score').textContent = finalScore;
+            document.getElementById('result-correct-count').textContent = `Benar ${quizCorrect} dari ${quizQuestions.length} soal`;
+
+            let earnedStars = 1;
+            let starsStr = '⭐';
+            let title = 'Tetap Semangat!';
+            let msg = 'Kamu sudah berusaha dengan hebat! Yuk baca lagi materinya agar bisa dapat 3 bintang emas.';
+
+            if (finalScore >= 80) {
+                earnedStars = 3;
+                starsStr = '⭐⭐⭐';
+                title = 'Hebat Sekali, Juara!';
+                msg = 'Luar biasa! Kamu sudah sangat paham semua materi termasuk Kalimat Aktif & Pasif!';
+                startConfetti();
+            } else if (finalScore >= 55) {
+                earnedStars = 2;
+                starsStr = '⭐⭐';
+                title = 'Bagus Sekali!';
+                msg = 'Hasilmu sudah bagus! Sedikit lagi kamu pasti bisa meraih 3 bintang emas.';
+                startConfetti();
+            }
+
+            // Simpan progres bintang & skor terbaik ke localStorage
+            if (progressData.bestQuiz === null || finalScore > progressData.bestQuiz) {
+                progressData.bestQuiz = finalScore;
+            }
+            addStars(earnedStars);
+
+            document.getElementById('result-stars').textContent = starsStr;
+            document.getElementById('result-title').textContent = title;
+            document.getElementById('result-message').textContent = `${msg} (+${earnedStars} Bintang ditambahkan ke papan prestasimu!)`;
+        }
+
+        /* =========================================================
+           7. ANIMASI KONFETI SELEBRASI
+           ========================================================= */
+        let confettiAnimId = null;
+        let confettiPieces = [];
+
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.classList.remove('hidden');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'];
+            confettiPieces = Array.from({ length: 95 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 10 + 6,
+                h: Math.random() * 6 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 3 + 2,
+                angle: Math.random() * 360,
+                spin: Math.random() * 6 - 3
+            }));
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                confettiPieces.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                    p.y += p.speed;
+                    p.angle += p.spin;
+                    if (p.y > canvas.height) {
+                        p.y = -10;
+                        p.x = Math.random() * canvas.width;
+                    }
+                });
+                confettiAnimId = requestAnimationFrame(draw);
+            }
+            draw();
+            setTimeout(stopConfetti, 5000);
+        }
+
+        function stopConfetti() {
+            if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+            document.getElementById('confetti-canvas').classList.add('hidden');
+        }
+
+        /* =========================================================
+           8. INISIALISASI SAAT HALAMAN DIMUAT
+           ========================================================= */
+        window.onload = function() {
+            loadProgress();
+            switchPage('beranda');
+            selectModule(1);
+            showKapitalExample(0);
+            renderSpoSentence();
+            renderDiCards();
+            renderFlashcards();
+            renderMagicSelector();
+            renderMagicStage(false);
+            selectLatihan(1);
+            renderLatihan1();
+            renderLatihan2();
+            selectLatihan3Part('A');
+            renderLatihan3A();
+            renderLatihan3B();
+        };
+    </script>
+</body>
+</html>
